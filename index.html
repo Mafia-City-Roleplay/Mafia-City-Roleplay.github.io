@@ -1,13 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+<html = style="height: 100%;">
+  <head>
+    <title>Mafia City Assets Map</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simpsons GIF</title>
-</head>
-<body>
-    <a href="https://gifdb.com/images/high/the-simpsons-homer-hiding-nothing-to-see-here-nccbbqv2ij1qkw3a.gif">
-        <img src="https://gifdb.com/images/high/the-simpsons-homer-hiding-nothing-to-see-here-nccbbqv2ij1qkw3a.gif" alt="Simpsons GIF" style="display: block; margin: 0 auto;">
-    </a>
-</body>
+    <link rel="stylesheet" href="scripts/leaflet.css">
+    <script src="scripts/leaflet.js"></script>
+  </head>
+
+  <body style="height: 100%; margin: 0;">
+    <div id="map" style="width: 100%; height: 100%; background: #0FA8D2;"></div>
+    <script type="text/javascript">
+	
+      //Creating the Map
+      var map = L.map('map').setView([0, 0], 0);
+      L.tileLayer('map/{z}/{x}/{y}.png', {
+        continuousWorld: false,
+        noWrap: true,
+        minZoom: 1,
+        maxZoom: 5,
+      }).addTo(map);
+
+      //Coordinate Finder
+      var marker = L.marker([0, 0], {
+        draggable: true,
+      }).addTo(map);
+      marker.bindPopup('LatLng Marker').openPopup();
+      marker.on('dragend', function(e) {
+        marker.getPopup().setContent(marker.getLatLng().toString()).openOn(map);
+      });
+
+      //Icons
+      var redStar = L.icon({
+        iconUrl:       'icons/redStar.png',
+        iconRetinaUrl: 'icons/redStar.png',
+        shadowUrl:     'scripts/images/marker-shadow.png',
+        iconSize:    [25, 41],
+        iconAnchor:  [12, 41],
+        popupAnchor: [1, -34],
+        tooltipAnchor: [16, -28],
+        shadowSize:  [41, 41]
+      });
+  
+      //Markers
+      var thisTestLocation = L.marker([45, 15], {icon: redStar}).bindPopup("Test Location");
+
+      //Marker Groups
+      var group_1 = L.layerGroup([thisTestLocation]);
+
+      /*
+        Police Precincts
+        Medical Precincts
+        Government Facilities
+        Dealerships
+        Custom Houses
+      */
+
+      //Marker Overlay
+      var overlays={
+        "Group_1" : group_1,
+      }
+
+      //GROUP CONTROLS
+      L.control.layers(null, overlays).addTo(map);
+
+    </script>
+  </body>
 </html>
