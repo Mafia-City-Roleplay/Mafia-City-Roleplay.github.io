@@ -3,16 +3,34 @@
   <head>
     <title>Mafia City Assets Map</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="icons/mcrp.png">
     <link rel="stylesheet" href="scripts/leaflet.css">
     <script src="scripts/leaflet.js"></script>
+    <script src="scripts/Leaflet.Editable.js"></script>
   </head>
 
   <body style="height: 100%; margin: 0;">
     <div id="map" style="width: 100%; height: 100%; background: #0FA8D2;"></div>
     <script type="text/javascript">
-	
+
+      let webhookURL = "https://discord.com/api/webhooks/1182056990814507018/X4Y7ho7DtR-7yRXRI4aF7xxnocH0VzllNxsLeD2m4eUncyWAS8ySKCpuIAQ6j_btMQb4";
+      let restfulURL = "https://script.google.com/macros/s/AKfycbzdr9Mlj6dNElsVktfAFdM1sy6Jb6r2LMZJRrxDqo6DCR2hVuRPkzm93_GBpMAA2LMt/exec";
+      let mapPinsData;
+      let mapPolyData;  
+
+
+      /*
+      Replace Cat(1-n) with following:
+
+      Police Precincts
+      Medical Precincts
+      Government Facilities
+      Dealerships
+      Custom Houses
+      */
+
       //Creating the Map
-      var map = L.map('map').setView([0, 0], 0);
+      var map = L.map('map', {editable: true}).setView([0, 0], 0);
       L.tileLayer('map/{z}/{x}/{y}.png', {
         continuousWorld: false,
         noWrap: true,
@@ -20,49 +38,336 @@
         maxZoom: 5,
       }).addTo(map);
 
-      //Coordinate Finder
-      var marker = L.marker([0, 0], {
-        draggable: true,
-      }).addTo(map);
-      marker.bindPopup('LatLng Marker').openPopup();
-      marker.on('dragend', function(e) {
-        marker.getPopup().setContent(marker.getLatLng().toString()).openOn(map);
+
+      //Draw API
+      L.EditControl = L.Control.extend({
+
+        options: {
+            position: 'topleft',
+            callback: null,
+            kind: '',
+            html: ''
+        },
+
+        onAdd: function (map) {
+          var container = L.DomUtil.create('div', 'leaflet-control leaflet-bar'),
+          link = L.DomUtil.create('a', '', container);
+
+          link.href = '#';
+          link.title = 'Create new ' + this.options.kind;
+          link.innerHTML = this.options.html;
+          L.DomEvent.on(link, 'click', L.DomEvent.stop)
+                    .on(link, 'click', function () {
+                      window.LAYER = this.options.callback.call(map.editTools);
+                    }, this);
+          return container;
+        }
+
+        });
+
+        L.NewLineControl = L.EditControl.extend({
+
+        options: {
+            position: 'topleft',
+            callback: map.editTools.startPolyline,
+            kind: 'Polyline',
+            html: '📐'
+        }
+
+        });
+
+        L.NewPolygonControl = L.EditControl.extend({
+
+        options: {
+            position: 'topleft',
+            callback: map.editTools.startPolygon,
+            kind: 'Polygon',
+            html: '🔰'
+        }
+
+        });
+
+        L.NewMarkerControl = L.EditControl.extend({
+
+        options: {
+            position: 'topleft',
+            callback: map.editTools.startMarker,
+            kind: 'Marker',
+            html: '📌'
+        }
+
+        });
+
+        L.NewRectangleControl = L.EditControl.extend({
+
+        options: {
+            position: 'topleft',
+            callback: map.editTools.startRectangle,
+            kind: 'Rectangle',
+            html: '🟦'
+        }
+
+        });
+
+        L.NewCircleControl = L.EditControl.extend({
+
+        options: {
+            position: 'topleft',
+            callback: map.editTools.startCircle,
+            kind: 'Circle',
+            html: '🟣'
+        }
+
       });
+
+      map.addControl(new L.NewMarkerControl());
+      map.addControl(new L.NewLineControl());
+      map.addControl(new L.NewPolygonControl());
+      //map.addControl(new L.NewRectangleControl());
+      //map.addControl(new L.NewCircleControl());
+
+      function extractCoordinates(input) {
+        const regex = /LatLng\((-?\d+\.\d+), (-?\d+\.\d+)\)/g;
+        let coordinates = [];
+        let match;
+        
+        while ((match = regex.exec(input)) !== null) {
+            coordinates.push([parseFloat(match[1]), parseFloat(match[2])]);
+        }
+        
+        return coordinates.map(coord => `[${coord.join(",")}]`).join(",");
+      }
+
+      function parseCoordinatesString(coordinatesString) {
+        // Removing leading and trailing brackets, if any
+        coordinatesString = coordinatesString.replace(/^\[|\]$/g, '');
+
+        // Splitting the string into pairs of coordinates
+        const pairs = coordinatesString.split('],[');
+
+        // Initialize an array to hold the coordinates
+        const coordinates = [];
+
+        // Extracting coordinates from pairs and pushing them to the coordinates array
+        pairs.forEach(pair => {
+            const [lat, lng] = pair.split(',').map(Number);
+            coordinates.push([lat, lng]);
+        });
+
+        return coordinates;
+      }
+
+      function isValidHexColor(color) {
+        // Regular expression to match a valid hex color code
+        const hexRegex = /^#[0-9A-Fa-f]{6}$/;
+        return hexRegex.test(color);
+      }
+
+      map.on('cymatic:drawing:commit', ({ layer }) => {
+
+        setTimeout(function(){
+        
+          if (layer instanceof L.Marker) {
+            let coords = layer.getLatLng();
+            let xsplit;
+            let ysplit;
+
+            const regex = /LatLng\((-?\d+\.\d+), (-?\d+\.\d+)\)/g;
+            let match;
+            
+            while ((match = regex.exec(coords)) !== null) {
+              xsplit = parseFloat(match[1]);
+              ysplit = parseFloat(match[2]);
+            }
+
+            var satisfied = confirm("Are you satisfied with the location of the Marker?\n\nNOTE: You cannot tab off this page. Doing so will result in the termination of input. You must have the following ready:\n- Display Image (as a URL with image extension)\n\nYou CAN use discord to store copy-paste-able text, you just can't tab off of tis page in your BROWSER.");
+            if (satisfied == true) {
+
+              while (true) {
+                var category = prompt("Please select the Marker Category: cat1; cat2; cat3; cat4; cat5: or; cat6");
+
+                if (category === null) {
+                  var reconfirm = confirm("Are you sure you wish to cancel?");
+                  if (reconfirm == true) {
+                    alert("Alright! You have cancelled.");
+                    map.removeLayer(layer);
+                  } else {
+                    continue;
+                  }
+                }
+
+                switch(category.toLowerCase()) {
+                  case "cat1":
+                    break;
+                  case "cat2":
+                    break;
+                  case "cat3":
+                    break;
+                  case "cat4":
+                    break;
+                  case "cat5":
+                    break;
+                  case "cat6":
+                    break;
+                  default:
+                    alert("You need to select a category from the list.");
+                    continue;
+                }
+                break;
+              }
+
+              var name = prompt("What is the name of the Marker?");
+              var image = prompt("Enter a Image URL (with extension) for this Marker");
+
+              fetch(webhookURL, {
+                method: "POST",
+                body: JSON.stringify({
+                  "username": "MCRP Asset Map Logger",
+                  "avatar_url": "https://cdn.discordapp.com/attachments/848501027337404436/1227932382829477969/mcrp.png",
+                  "content": "```"+category+"``````"+xsplit+"``````"+ysplit+"``````"+name+"``````"+image+"```",
+                }),
+                headers: {
+                  "Content-type": "application/json"
+                }
+              });
+
+              setTimeout(function(){location.reload()}, 1000);
+            } else {
+              alert("Alright! You may try again.");
+              map.removeLayer(layer);
+            }
+          } else if (layer instanceof L.Polyline) {
+            let coords = layer.getLatLngs();
+            let extract = extractCoordinates(coords);
+            let category;
+
+            var satisfied = confirm("Are you satisfied with the points of the Poly?\n\nNOTE: You cannot tab off this page. Doing so will result in the termination of input. You must have the following ready:\n- Display Color (as a valid Hex Code)\n- Display Image (as a URL with image extension)\n\nYou CAN use discord to store copy-paste-able text, you just can't tab off of tis page in your BROWSER.");
+            if (satisfied == true) {
+
+              if (layer instanceof L.Polygon) {
+                category = "polygon";
+              } else if (layer instanceof L.Polyline) {
+                category = "polyline";
+              } else {
+                var reconfirm = confirm("Are you sure you wish to cancel?");
+                if (reconfirm) {
+                    alert("Alright! You have cancelled.");
+                    map.removeLayer(layer);
+                }
+              }
+
+              let color;
+              do {
+                color = prompt("What is the desired color of the Poly?");
+                if (color === null) {
+                    color = "#FFFFFF"; // Default value if prompt returns null
+                }
+              } while (!isValidHexColor(color));
+
+              var name = prompt("What is the desired name of the Poly?");
+              var image = prompt("Enter a Image URL (with extension) for this Poly");
+
+              fetch(webhookURL, {
+              method: "POST",
+              body: JSON.stringify({
+                "username": "MCRP Asset Map Logger",
+                "avatar_url": "https://cdn.discordapp.com/attachments/848501027337404436/1227932382829477969/mcrp.png",
+                "content": "```"+category+"``````"+extract+"``````"+color+"``````"+name+"``````"+image+"```",
+              }),
+              headers: {
+                "Content-type": "application/json"
+              }
+              });
+
+              setTimeout(function(){location.reload()}, 1000);
+            } else {
+              alert("Alright! You may continue editing.");
+            }
+          }
+        }, 500);
+      });
+
 
       //Icons
       var redStar = L.icon({
         iconUrl:       'icons/redStar.png',
         iconRetinaUrl: 'icons/redStar.png',
-        shadowUrl:     'scripts/images/marker-shadow.png',
+        shadowUrl:     'icons/shadow.png',
         iconSize:    [25, 41],
         iconAnchor:  [12, 41],
         popupAnchor: [1, -34],
         tooltipAnchor: [16, -28],
         shadowSize:  [41, 41]
       });
-  
-      //Markers
-      var thisTestLocation = L.marker([45, 15], {icon: redStar}).bindPopup("Test Location");
 
-      //Marker Groups
-      var group_1 = L.layerGroup([thisTestLocation]);
 
-      /*
-        Police Precincts
-        Medical Precincts
-        Government Facilities
-        Dealerships
-        Custom Houses
-      */
+      //RESTful API
+      fetch(restfulURL, {
+        headers: {
+          'Accept': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        mapPinsData = data.pinsdata;
+        mapPolyData = data.polydata;
 
-      //Marker Overlay
-      var overlays={
-        "Group_1" : group_1,
-      }
+        let i = mapPinsData.length;
 
-      //GROUP CONTROLS
-      L.control.layers(null, overlays).addTo(map);
+        for (let v = 0; v < i; v++) {
+          let val = mapPinsData[v];
+          let category = val.category;
+          let xCoordinate = val.xCoordinate;
+          let yCoordinate = val.yCoordinate;
+          let name = val.name;
+          let image = val.image;
 
+          switch (category) {
+            case "cat1":
+              L.marker([xCoordinate,yCoordinate], {icon: icon_marshal, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+              break;
+            case "cat2":
+              L.marker([xCoordinate,yCoordinate], {icon: icon_ingredient, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+              break;
+            case "cat3":
+              L.marker([xCoordinate,yCoordinate], {icon: icon_reservation, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+              break;
+            case "cat4":
+              L.marker([xCoordinate,yCoordinate], {icon: icon_graveyard, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+              break;
+            case "cat5":
+              L.marker([xCoordinate,yCoordinate], {icon: icon_campsite, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+              break;
+            case "cat6":
+              L.marker([xCoordinate,yCoordinate], {icon: icon_interest, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+              break;
+            default:
+              break;
+          }
+        };
+
+        let j = mapPolyData.length
+
+        for (let v = 0; v < j; v++) {
+          let val = mapPolyData[v];
+          let category = val.category;
+          let coordinates = parseCoordinatesString(val.coordinates);
+          let color = val.color;
+          let name = val.name
+          let image = val.image;
+
+          switch (category) {
+            case "polyline":
+              L.polyline([coordinates], {color: color}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+              break;
+            case "polygon":
+              L.polygon([coordinates], {color: color}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+              break;
+            default:
+              break;
+          }
+        }
+      });
     </script>
   </body>
 </html>
