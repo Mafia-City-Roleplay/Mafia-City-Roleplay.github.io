@@ -18,17 +18,6 @@
       let mapPinsData;
       let mapPolyData;  
 
-
-      /*
-      Replace Cat(1-n) with following:
-
-      Police Precincts
-      Medical Precincts
-      Government Facilities
-      Dealerships
-      Custom Houses
-      */
-
       //Creating the Map
       var map = L.map('map', {editable: true}).setView([0, 0], 0);
       L.tileLayer('map/{z}/{x}/{y}.png', {
@@ -289,7 +278,18 @@
 
 
       //Icons
-      var redStar = L.icon({
+      var icon_devErrFix = L.icon({
+        iconUrl:       'icons/blankDev.png',
+        iconRetinaUrl: 'icons/blankDev.png',
+        shadowUrl:     'icons/blankShadow.png',
+        iconSize:    [25, 41],
+        iconAnchor:  [12, 41],
+        popupAnchor: [1, -34],
+        tooltipAnchor: [16, -28],
+        shadowSize:  [41, 41]
+      });
+
+      var icon_redStar = L.icon({
         iconUrl:       'icons/redStar.png',
         iconRetinaUrl: 'icons/redStar.png',
         shadowUrl:     'icons/shadow.png',
@@ -323,23 +323,26 @@
           let image = val.image;
 
           switch (category) {
+            case "devErrFix":
+              L.marker([0,0], {icon: icon_devErrFix}).addTo(map);
+              break;
             case "cat1":
-              L.marker([xCoordinate,yCoordinate], {icon: icon_marshal, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+              L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
               break;
             case "cat2":
-              L.marker([xCoordinate,yCoordinate], {icon: icon_ingredient, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+              L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
               break;
             case "cat3":
-              L.marker([xCoordinate,yCoordinate], {icon: icon_reservation, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+              L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
               break;
             case "cat4":
-              L.marker([xCoordinate,yCoordinate], {icon: icon_graveyard, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+              L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
               break;
             case "cat5":
-              L.marker([xCoordinate,yCoordinate], {icon: icon_campsite, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+              L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
               break;
             case "cat6":
-              L.marker([xCoordinate,yCoordinate], {icon: icon_interest, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+              L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
               break;
             default:
               break;
@@ -351,12 +354,22 @@
         for (let v = 0; v < j; v++) {
           let val = mapPolyData[v];
           let category = val.category;
-          let coordinates = parseCoordinatesString(val.coordinates);
-          let color = val.color;
-          let name = val.name
-          let image = val.image;
+          let coordinates;
+          let color;
+          let name;
+          let image;
+
+          if (category !== "devErrFix") {
+            coordinates = parseCoordinatesString(val.coordinates);
+            color = val.color;
+            name = val.name
+            image = val.image;
+          }
 
           switch (category) {
+            case "devErrFix":
+              L.marker([0,0], {icon: icon_devErrFix}).addTo(map);
+              break;
             case "polyline":
               L.polyline([coordinates], {color: color}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
               break;
