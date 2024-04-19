@@ -16,7 +16,7 @@
       let webhookURL = "https://discord.com/api/webhooks/1182056990814507018/X4Y7ho7DtR-7yRXRI4aF7xxnocH0VzllNxsLeD2m4eUncyWAS8ySKCpuIAQ6j_btMQb4";
       let restfulURL = "https://script.google.com/macros/s/AKfycbzdr9Mlj6dNElsVktfAFdM1sy6Jb6r2LMZJRrxDqo6DCR2hVuRPkzm93_GBpMAA2LMt/exec";
       let mapPinsData;
-      let mapPolyData;  
+      let mapPolyData;
 
       //Creating the Map
       var map = L.map('map', {editable: true}).setView([0, 0], 0);
@@ -211,9 +211,45 @@
               fetch(webhookURL, {
                 method: "POST",
                 body: JSON.stringify({
-                  "username": "MCRP Asset Map Logger",
+                  "content": "**[Asset Map Database](https://docs.google.com/spreadsheets/d/1J4RhJ9qOTOagncg_7pR2MY30DUf1pojyIZvoI81s-xM/edit)**",
+                  "embeds": [
+                    {
+                      "color": 14203281,
+                      "fields": [
+                        {
+                          "name": "Cateogry",
+                          "value": "```"+category+"```",
+                          "inline": true
+                        },
+                        {
+                          "name": "X Coordinate",
+                          "value": "```"+xsplit+"```",
+                          "inline": true
+                        },
+                        {
+                          "name": "Y Coordinate",
+                          "value": "```"+ysplit+"```",
+                          "inline": true
+                        },
+                        {
+                          "name": "Marker Name",
+                          "value": "```"+name+"```",
+                          "inline": false
+                        },
+                        {
+                          "name": "Display Image",
+                          "value": "```"+image+"```",
+                          "inline": false
+                        }
+                      ],
+                      "footer": {
+                        "text": "Developed by CymaticEntropy"
+                      }
+                    }
+                  ],
+                  "username": "Asset Map Logger",
                   "avatar_url": "https://cdn.discordapp.com/attachments/848501027337404436/1227932382829477969/mcrp.png",
-                  "content": "```"+category+"``````"+xsplit+"``````"+ysplit+"``````"+name+"``````"+image+"```",
+                  "attachments": []
                 }),
                 headers: {
                   "Content-type": "application/json"
@@ -259,9 +295,42 @@
               fetch(webhookURL, {
               method: "POST",
               body: JSON.stringify({
-                "username": "MCRP Asset Map Logger",
+                "content": "**[Asset Map Database](https://docs.google.com/spreadsheets/d/1J4RhJ9qOTOagncg_7pR2MY30DUf1pojyIZvoI81s-xM/edit)**",
+                "embeds": [
+                  {
+                    "title": "Coordinates",
+                    "description": "```"+extract+"```",
+                    "color": 14203281,
+                    "fields": [
+                      {
+                        "name": "Category Type",
+                        "value": "```"+category+"```",
+                        "inline": true
+                      },
+                      {
+                        "name": "Hex Color",
+                        "value": "```"+color+"```",
+                        "inline": true
+                      },
+                      {
+                        "name": "Poly Name",
+                        "value": "```"+name+"```",
+                        "inline": true
+                      },
+                      {
+                        "name": "Display Image",
+                        "value": "```"+image+"```",
+                        "inline": false
+                      }
+                    ],
+                    "footer": {
+                      "text": "Developed by CymaticEntropy"
+                    }
+                  }
+                ],
+                "username": "Lawman Map Logger",
                 "avatar_url": "https://cdn.discordapp.com/attachments/848501027337404436/1227932382829477969/mcrp.png",
-                "content": "```"+category+"``````"+extract+"``````"+color+"``````"+name+"``````"+image+"```",
+                "attachments": []
               }),
               headers: {
                 "Content-type": "application/json"
@@ -322,30 +391,32 @@
           let name = val.name;
           let image = val.image;
 
-          switch (category) {
-            case "devErrFix":
-              L.marker([0,0], {icon: icon_devErrFix}).addTo(map);
-              break;
-            case "cat1":
-              L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
-              break;
-            case "cat2":
-              L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
-              break;
-            case "cat3":
-              L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
-              break;
-            case "cat4":
-              L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
-              break;
-            case "cat5":
-              L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
-              break;
-            case "cat6":
-              L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
-              break;
-            default:
-              break;
+          if (val.valid == true) {
+            switch (category) {
+              case "devErrFix":
+                L.marker([0,0], {icon: icon_devErrFix}).addTo(map);
+                break;
+              case "cat1":
+                L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+                break;
+              case "cat2":
+                L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+                break;
+              case "cat3":
+                L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+                break;
+              case "cat4":
+                L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+                break;
+              case "cat5":
+                L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+                break;
+              case "cat6":
+                L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
+                break;
+              default:
+                break;
+            }
           }
         };
 
