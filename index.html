@@ -397,46 +397,22 @@
                 L.marker([0,0], {icon: icon_devErrFix}).addTo(map);
                 break;
               case "cat1":
-                if (image !== undefined) {
-                  L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
-                } else {
-                  L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1>").addTo(map);
-                }
+                L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
                 break;
               case "cat2":
-                if (image !== undefined) {
-                  L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
-                } else {
-                  L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1>").addTo(map);
-                }
+                L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
                 break;
               case "cat3":
-                if (image !== undefined) {
-                  L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
-                } else {
-                  L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1>").addTo(map);
-                }
+                L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
                 break;
               case "cat4":
-                if (image !== undefined) {
-                  L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
-                } else {
-                  L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1>").addTo(map);
-                }
+                L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
                 break;
               case "cat5":
-                if (image !== undefined) {
-                  L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
-                } else {
-                  L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1>").addTo(map);
-                }
+                L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
                 break;
               case "cat6":
-                if (image !== undefined) {
-                  L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
-                } else {
-                  L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1>").addTo(map);
-                }
+                L.marker([xCoordinate,yCoordinate], {icon: icon_redStar, title: name}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
                 break;
               default:
                 break;
@@ -466,18 +442,10 @@
               L.marker([0,0], {icon: icon_devErrFix}).addTo(map);
               break;
             case "polyline":
-              if (image !== undefined) {
-                L.polyline([coordinates], {color: color}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
-              } else {
-                L.polyline([coordinates], {color: color}).bindPopup("<h1>"+name+"</h1>").addTo(map);
-              }
+              L.polyline([coordinates], {color: color}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
               break;
             case "polygon":
-              if (image !== undefined) {
-                L.polygon([coordinates], {color: color}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
-              } else {
-                L.polygon([coordinates], {color: color}).bindPopup("<h1>"+name+"</h1>").addTo(map);
-              }
+              L.polygon([coordinates], {color: color}).bindPopup("<h1>"+name+"</h1><img src = '"+image+"' style='width:256px;height:256px'>").addTo(map);
               break;
             default:
               break;
